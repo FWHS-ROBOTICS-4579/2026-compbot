@@ -14,73 +14,38 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static frc.robot.Constants.FuelConstants.*;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final Drivetrain m_Drivetrain = new Drivetrain();
 
-  // ---------------------------------------------
-  // !!!!! REPLACE IF USING XBOX CONTROLLER !!!!!
-  // ---------------------------------------------
-  // private final CommandXboxController m_driverController =
-  //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandJoystick m_driverController =
       new CommandJoystick(OperatorConstants.kDriverControllerPort);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
     configureBindings();
-
-    m_Drivetrain.setDefaultCommand(
-      Commands.run(
-        // ------------------------------------------------------------------------------------------------------
-        // !!! replace with getLeftY and GetLeftX if using xbox controller (or getRightX for right joystick) !!!
-        // ------------------------------------------------------------------------------------------------------
-      () -> m_Drivetrain.ArcadeDrive(-m_driverController.getY(), -m_driverController.getX())
-      , m_Drivetrain)
-    );
-
-    m_driverController.button(1).and(m_driverController.button(3).negate()).whileTrue(
-      Commands.sequence(
-        Commands.run(() -> {
-          m_ShooterSubsystem.StartShooter();
-        }, m_ShooterSubsystem)
-      ).finallyDo(() -> {
-        m_ShooterSubsystem.StopShooter();
-      })
-    );
-
-    m_driverController.button(3).and(m_driverController.button(1).negate()).whileTrue(
-      Commands.sequence(
-        Commands.run(() -> {
-          m_ShooterSubsystem.StartIntake();
-        }, m_ShooterSubsystem)
-      ).finallyDo(() -> {
-        m_ShooterSubsystem.StopIntake();
-      })  
-    );
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
+
   private void configureBindings() {
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    // Drivetrain
+    m_Drivetrain.setDefaultCommand(
+        m_Drivetrain.ArcadeDrive(
+          () -> -m_driverController.getY(),
+          () -> -m_driverController.getX()));
+
+    // Intake Fuel
+    m_driverController.button(3).whileTrue(
+        m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Intake(), () -> m_ShooterSubsystem.Stop()););
+
+    // Shooting
+    m_driverController.button(1).whileTrue(m_ShooterSubsystem.SpinUpCommand.withTimeout(SPIN_UP_SECONDS))
+        .andThen(m_ShooterSubsystem.ShootCommand())
+        .finallyDo(() -> m_ShooterSubsystem.Stop());
+
+    // Eject
+    m_driverController.button(2).whileTrue(m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Eject(), () -> m_ShooterSubsystem.Stop()));
   }
 }

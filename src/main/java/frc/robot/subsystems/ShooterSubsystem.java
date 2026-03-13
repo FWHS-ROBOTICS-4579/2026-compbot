@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static frc.robot.Constants.FuelConstants.*;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax feederMotor = new SparkMax(5, MotorType.kBrushed);
@@ -35,23 +36,38 @@ public class ShooterSubsystem extends SubsystemBase {
     feederMotor.configure(feederConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
-  public void StartShooter() {
-    intakeAndShooterMotor.setVoltage(10);
-    feederMotor.setVoltage(10);
+
+  public void Intake() {
+    intakeAndShooterMotor.setVoltage(INTAKING_INTAKE_VOLTAGE);
+    feederMotor.setVoltage(INTAKING_FEEDER_VOLTAGE);
   }
 
-  public void StopShooter() {
+  public void Eject() {
+    intakeAndShooterMotor.setVoltage(-1 * INTAKING_INTAKE_VOLTAGE);
+    feederMotor.setVoltage(-1 * INTAKING_FEEDER_VOLTAGE);
+  }
+
+  public void SpinUpShooter() {
+    intakeAndShooterMotor.setVoltage(LAUNCHING_LAUNCHER_VOLTAGE);
+    feederMotor.setVoltage(SPIN_UP_FEEDER_VOLTAGE);
+  }
+
+  public void ShootBall() {
+    intakeAndShooterMotor.setVoltage(LAUNCHING_LAUNCHER_VOLTAGE);
+    feederMotor.setVoltage(LAUNCHING_FEEDER_VOLTAGE);
+  }
+
+  public void Stop() {
     intakeAndShooterMotor.setVoltage(0);
     feederMotor.setVoltage(0);
   }
 
-  public void StartIntake() {
-    intakeAndShooterMotor.setVoltage(-10);
-    feederMotor.setVoltage(-10);
+
+  public Command SpinUpShooterCommand() {
+    return this.run(() -> SpinUpShooter());
   }
 
-  public void StopIntake() {
-    intakeAndShooterMotor.setVoltage(0);
-    feederMotor.setVoltage(0);
+  public Command ShootCommand() {
+    return this.run(() -> ShootBall());
   }
 }
