@@ -11,8 +11,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.FuelConstants.*;
 
@@ -20,8 +19,8 @@ public class RobotContainer {
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final Drivetrain m_Drivetrain = new Drivetrain();
 
-  private final CommandJoystick m_driverController =
-      new CommandJoystick(OperatorConstants.kDriverControllerPort);
+  private final CommandPS5Controller m_driverController =
+      new CommandPS5Controller(OperatorConstants.kDriverControllerPort);
 
   public RobotContainer() {
     configureBindings();
@@ -33,19 +32,19 @@ public class RobotContainer {
     // Drivetrain
     m_Drivetrain.setDefaultCommand(
         m_Drivetrain.ArcadeDrive(
-          () -> -m_driverController.getY(),
-          () -> -m_driverController.getX()));
+          () -> -m_driverController.getLeftY(),
+          () -> -m_driverController.getRightX()));
 
     // Intake Fuel
-    m_driverController.button(3).whileTrue(
+    m_driverController.L2().whileTrue(
         m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Intake(), () -> m_ShooterSubsystem.Stop()););
 
     // Shooting
-    m_driverController.button(1).whileTrue(m_ShooterSubsystem.SpinUpCommand.withTimeout(SPIN_UP_SECONDS))
+    m_driverController.R2().whileTrue(m_ShooterSubsystem.SpinUpCommand.withTimeout(SPIN_UP_SECONDS))
         .andThen(m_ShooterSubsystem.ShootCommand())
         .finallyDo(() -> m_ShooterSubsystem.Stop());
 
     // Eject
-    m_driverController.button(2).whileTrue(m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Eject(), () -> m_ShooterSubsystem.Stop()));
+    m_driverController.R1().whileTrue(m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Eject(), () -> m_ShooterSubsystem.Stop()));
   }
 }
