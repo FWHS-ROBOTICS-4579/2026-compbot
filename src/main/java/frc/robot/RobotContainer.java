@@ -7,18 +7,15 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ShooterSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import static frc.robot.Constants.FuelConstants.*;
 
 public class RobotContainer {
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final Drivetrain m_Drivetrain = new Drivetrain();
 
-  private final CommandPS5Controller m_driverController =
-      new CommandPS5Controller(OperatorConstants.kDriverControllerPort);
+  private final CommandPS4Controller m_driverController =
+      new CommandPS4Controller(OperatorConstants.kDriverControllerPort);
 
   public RobotContainer() {
     configureBindings();
@@ -30,10 +27,10 @@ public class RobotContainer {
     // Drivetrain
     m_Drivetrain.setDefaultCommand(
         m_Drivetrain.ArcadeDrive(
-          -m_driverController.getLeftY(),
-          -m_driverController.getRightX())
-          );
-
+          () -> -m_driverController.getLeftY(),
+          () -> -m_driverController.getRightX()
+          ));
+    
     // Intake Fuel
     m_driverController.L2().whileTrue(
         m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Intake(), () -> m_ShooterSubsystem.Stop()));

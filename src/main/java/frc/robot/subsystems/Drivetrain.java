@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -44,9 +46,9 @@ public class Drivetrain extends SubsystemBase {
     LeftLeader.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
-  public Command ArcadeDrive(double x, double y) {
+  public Command ArcadeDrive(DoubleSupplier x, DoubleSupplier y) {
     return this.run(
-      () -> differentialDrive.arcadeDrive(x, y)
+      () -> differentialDrive.arcadeDrive(x.getAsDouble(), y.getAsDouble())
     );
   }
 }
