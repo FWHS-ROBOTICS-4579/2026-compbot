@@ -4,10 +4,8 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -46,7 +44,9 @@ public class Drivetrain extends SubsystemBase {
     LeftLeader.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
-  public void ArcadeDrive(double x, double y) {
-    differentialDrive.arcadeDrive(x, y);
+  public Command ArcadeDrive(double x, double y) {
+    return this.run(
+      () -> differentialDrive.arcadeDrive(x, y)
+    );
   }
 }

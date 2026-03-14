@@ -30,17 +30,18 @@ public class RobotContainer {
     // Drivetrain
     m_Drivetrain.setDefaultCommand(
         m_Drivetrain.ArcadeDrive(
-          () -> -m_driverController.getLeftY(),
-          () -> -m_driverController.getRightX()));
+          -m_driverController.getLeftY(),
+          -m_driverController.getRightX())
+          );
 
     // Intake Fuel
     m_driverController.L2().whileTrue(
-        m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Intake(), () -> m_ShooterSubsystem.Stop()););
+        m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Intake(), () -> m_ShooterSubsystem.Stop()));
 
     // Shooting
-    m_driverController.R2().whileTrue(m_ShooterSubsystem.SpinUpCommand.withTimeout(SPIN_UP_SECONDS))
+    m_driverController.R2().whileTrue(m_ShooterSubsystem.SpinUpShooterCommand().withTimeout(SPIN_UP_SECONDS)
         .andThen(m_ShooterSubsystem.ShootCommand())
-        .finallyDo(() -> m_ShooterSubsystem.Stop());
+        .finallyDo(() -> m_ShooterSubsystem.Stop())); 
 
     // Eject
     m_driverController.R1().whileTrue(m_ShooterSubsystem.runEnd(() -> m_ShooterSubsystem.Eject(), () -> m_ShooterSubsystem.Stop()));
