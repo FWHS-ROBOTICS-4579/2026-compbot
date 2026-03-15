@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.FuelConstants.*;
@@ -17,7 +18,7 @@ import static frc.robot.Constants.FuelConstants.*;
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax feederMotor = new SparkMax(5, MotorType.kBrushed);
   private final SparkMax intakeAndShooterMotor = new SparkMax(6, MotorType.kBrushed);
-
+  
   /** Creates a new ExampleSubsystem. */
   public ShooterSubsystem() {
     SparkBaseConfig launcherConfig = new SparkMaxConfig();
