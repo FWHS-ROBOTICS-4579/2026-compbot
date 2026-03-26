@@ -25,7 +25,7 @@ public class Drivetrain extends SubsystemBase {
 
   private final DifferentialDrive differentialDrive = new DifferentialDrive(LeftLeader, RightLeader);
 
-  private final SlewRateLimiter driveSpeedLimiter = new SlewRateLimiter(10);
+  private final SlewRateLimiter driveSpeedLimiter = new SlewRateLimiter(2);
 
   /** Creates a new ExampleSubsystem. */
   public Drivetrain() {
@@ -51,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
 
   public Command ArcadeDrive(DoubleSupplier x, DoubleSupplier y) {
     return this.run(
-      () -> differentialDrive.arcadeDrive(x.getAsDouble(), y.getAsDouble())
+      () -> differentialDrive.arcadeDrive(driveSpeedLimiter.calculate(x.getAsDouble()), y.getAsDouble())
     );
   }
 }
